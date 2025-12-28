@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎁 神秘礼物</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+      min-height: 100vh;
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      overflow: hidden;
+      position: relative;
+      perspective: 1000px;
+      transform-style: preserve-3d;
+    }
+
+    .popup {
+      position: absolute;
+      width: 220px;
+      padding: 18px;
+      text-align: center;
+      font-size: 16px;
+      line-height: 1.5;
+      border-radius: 18px;
+      z-index: 10;
+      opacity: 0;
+      transform: translateZ(-100px) rotateX(45deg) rotateY(15deg) scale(0.6);
+      transform-style: preserve-3d;
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+      animation: pop3D 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+    }
+
+    @keyframes pop3D {
+      0% {
+        opacity: 0;
+        transform: translateZ(-100px) rotateX(45deg) rotateY(15deg) scale(0.6);
+      }
+      70% {
+        transform: translateZ(20px) rotateX(-5deg) rotateY(-3deg) scale(1.05);
+        opacity: 1;
+      }
+      100% {
+        opacity: 1;
+        transform: translateZ(0) rotateX(0) rotateY(0) scale(1);
+      }
+    }
+
+    .popup.color1 { background: linear-gradient(135deg, #ff9a9e 0%, #fad0c4 100%); color: #5a3a3a; }
+    .popup.color2 { background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); color: #2b4a66; }
+    .popup.color3 { background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 100%); color: #3a5a3a; }
+    .popup.color4 { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); color: #5a3a6a; }
+    .popup.color5 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #663a2b; }
+
+    .popup:hover {
+      transform: translateZ(30px) rotateX(-5deg) rotateY(5deg) !important;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      box-shadow:
+        0 16px 40px rgba(0, 0, 0, 0.25),
+        0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 20px;
+      color: #ff6b9d;
+      top: -30px;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(calc(100vh + 50px));
+        opacity: 0;
+      }
+    }
+
+    .start-btn {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 14px 32px;
+      background: #0078d4;
+      color: white;
+      border: none;
+      border-radius: 30px;
+      font-size: 18px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+      z-index: 20;
+    }
+    .start-btn:hover {
+      background: #0066b3;
+    }
+  </style>
+</head>
+<body>
+
+<button id="startBtn" class="start-btn">姚学姐，要打开吗？</button>
+
+<!-- 音频文件必须和 index.html 在同一目录，命名为 gift.mp3 -->
+<audio id="bgMusic" src="background-music.mp3" preload="auto"></audio>
+<script>
+  const messages = [
+    "愿所有的烦恼都消失",
+    "珍惜每一刻",
+    "好好爱自己",
+    "梦想成真",
+    "每一天都要过的开心哦！",
+    "2026，要做个快乐又有钱的大人哦~",
+    "2025厄运退！退！退！",
+    "2025不特别，特别的是认识了你",
+    "愿我们2026遇佳人"
+  ];
+
+  let started = false;
+
+  document.getElementById('startBtn').addEventListener('click', () => {
+    if (started) return;
+    started = true;
+    document.getElementById('startBtn').style.display = 'none';
+
+    // 播放背景音乐（必须由用户交互触发）
+    const audio = document.getElementById('bgMusic');
+    if (audio) {
+      audio.volume = 0.45;
+      const playPromise = audio.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(e => console.log("音频播放被阻止:", e));
+      }
+    }
+
+    // === 生成 150 个 3D 弹窗 ===
+    const totalPopups = 150;
+    const intervalMs = 80;
+    const colors = ['color1', 'color2', 'color3', 'color4', 'color5'];
+
+    for (let i = 0; i < totalPopups; i++) {
+      setTimeout(() => {
+        if (!started) return;
+
+        const popup = document.createElement('div');
+        popup.className = 'popup';
+        popup.classList.add(colors[Math.floor(Math.random() * colors.length)]);
+        popup.innerText = messages[Math.floor(Math.random() * messages.length)];
+
+        // 使用 px 定位更稳定（避免 % 导致重叠）
+        const x = Math.random() * (window.innerWidth - 240);
+        const y = Math.random() * (window.innerHeight - 120);
+        popup.style.left = `${x}px`;
+        popup.style.top = `${y}px`;
+
+        document.body.appendChild(popup);
+      }, i * intervalMs);
+    }
+
+    // === 飘心动画（持续进行）===
+    setInterval(() => {
+      if (!started || document.querySelectorAll('.heart').length > 12) return;
+
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.textContent = '❤️';
+      heart.style.left = Math.random() * window.innerWidth + 'px';
+      heart.style.animationDuration = (Math.random() * 2 + 2) + 's'; // 2~4秒下落
+      document.body.appendChild(heart);
+
+      // 自动清理
+      setTimeout(() => {
+        if (heart.parentNode) heart.remove();
+      }, 5000);
+    }, 700);
+  });
+</script>
+
+</body>
+</html>
