@@ -38,6 +38,34 @@
       animation: pop3D 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
     }
 
+    /* 照片专用样式 */
+    .popup.photo-popup {
+      width: 180px;
+      height: 180px;
+      padding: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+    }
+
+    .popup.photo-popup img {
+      max-width: 100%;
+      max-height: 100%;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    /* 淡出动画 */
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateZ(0) scale(1); }
+      to { opacity: 0; transform: translateZ(-50px) scale(0.9); }
+    }
+
+    .popup.fade-out {
+      animation: fadeOut 1s ease forwards !important;
+    }
+
     @keyframes pop3D {
       0% {
         opacity: 0;
@@ -59,7 +87,7 @@
     .popup.color4 { background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%); color: #5a3a6a; }
     .popup.color5 { background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); color: #663a2b; }
 
-    .popup:hover {
+    .popup:hover:not(.photo-popup) {
       transform: translateZ(30px) rotateX(-5deg) rotateY(5deg) !important;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
       box-shadow:
@@ -106,8 +134,9 @@
 
 <button id="startBtn" class="start-btn">姚学姐，要打开吗？</button>
 
-<!-- 音频文件必须和 index.html 在同一目录，命名为 gift.mp3 -->
-<audio id="bgMusic" src="background-music.mp3" preload="auto"></audio>
+<!-- 背景音乐（循环播放） -->
+<audio id="bgMusic" src="background-music.mp3" preload="auto" loop></audio>
+
 <script>
   const messages = [
     "愿所有的烦恼都消失",
@@ -121,6 +150,28 @@
     "愿我们2026遇佳人"
   ];
 
+  // ✅ 优化后的17个心形点（扩大范围）
+  const heartPoints = [
+    { x: 0, y: -180 },     // 顶部尖点
+    { x: 20, y: -130 },
+    { x: 40, y: -90 },
+    { x: 60, y: -50 },
+    { x: 80, y: -20 },
+    { x: 60, y: 20 },
+    { x: 40, y: 50 },
+    { x: 20, y: 90 },
+    { x: 0, y: 130 },
+    { x: -20, y: 90 },
+    { x: -40, y: 50 },
+    { x: -60, y: 20 },
+    { x: -80, y: -20 },
+    { x: -60, y: -50 },
+    { x: -40, y: -90 },
+    { x: -20, y: -130 }
+  ];
+
+  const photoPaths = Array.from({ length: 17 }, (_, i) => `images/${i + 1}.jpg`);
+
   let started = false;
 
   document.getElementById('startBtn').addEventListener('click', () => {
@@ -128,7 +179,6 @@
     started = true;
     document.getElementById('startBtn').style.display = 'none';
 
-    // 播放背景音乐（必须由用户交互触发）
     const audio = document.getElementById('bgMusic');
     if (audio) {
       audio.volume = 0.45;
@@ -138,46 +188,84 @@
       }
     }
 
-    // === 生成 150 个 3D 弹窗 ===
-    const totalPopups = 150;
-    const intervalMs = 80;
-    const colors = ['color1', 'color2', 'color3', 'color4', 'color5'];
+    const totalPhotos = photoPaths.length;
+    const photoIntervalMs = 150;
+    const photoDisplayDuration = 2500;
 
-    for (let i = 0; i < totalPopups; i++) {
+    const photoElements = [];
+
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    // ✅ 关键：增大 scale 到 3~5
+    const scale = 4.0; // 调整此值控制爱心大小
+
+    for (let i = 0; i < totalPhotos; i++) {
       setTimeout(() => {
         if (!started) return;
 
         const popup = document.createElement('div');
-        popup.className = 'popup';
-        popup.classList.add(colors[Math.floor(Math.random() * colors.length)]);
-        popup.innerText = messages[Math.floor(Math.random() * messages.length)];
+        popup.className = 'popup photo-popup';
+        const img = document.createElement('img');
+        img.src = photoPaths[i];
+        img.alt = `照片 ${i + 1}`;
+        popup.appendChild(img);
 
-        // 使用 px 定位更稳定（避免 % 导致重叠）
-        const x = Math.random() * (window.innerWidth - 240);
-        const y = Math.random() * (window.innerHeight - 120);
-        popup.style.left = `${x}px`;
-        popup.style.top = `${y}px`;
+        // 获取心形点并放大
+        const point = heartPoints[i];
+        const left = centerX + point.x * scale - 100;
+        const top = centerY + point.y * scale - 100;
+
+        // 安全边界
+        const safeLeft = Math.max(10, Math.min(window.innerWidth - 210, left));
+        const safeTop = Math.max(10, Math.min(window.innerHeight - 210, top));
+
+        popup.style.left = `${safeLeft}px`;
+        popup.style.top = `${safeTop}px`;
 
         document.body.appendChild(popup);
-      }, i * intervalMs);
+        photoElements.push(popup);
+      }, i * photoIntervalMs);
     }
 
-    // === 飘心动画（持续进行）===
-    setInterval(() => {
-      if (!started || document.querySelectorAll('.heart').length > 12) return;
-
-      const heart = document.createElement('div');
-      heart.className = 'heart';
-      heart.textContent = '❤️';
-      heart.style.left = Math.random() * window.innerWidth + 'px';
-      heart.style.animationDuration = (Math.random() * 2 + 2) + 's'; // 2~4秒下落
-      document.body.appendChild(heart);
-
-      // 自动清理
+    // === 淡出并启动祝福语 ===
+    setTimeout(() => {
+      photoElements.forEach(p => p.classList.add('fade-out'));
       setTimeout(() => {
-        if (heart.parentNode) heart.remove();
-      }, 5000);
-    }, 700);
+        photoElements.forEach(p => p.remove());
+
+        // 启动文字弹窗
+        const totalPopups = 150;
+        const intervalMs = 80;
+        const colors = ['color1', 'color2', 'color3', 'color4', 'color5'];
+        for (let i = 0; i < totalPopups; i++) {
+          setTimeout(() => {
+            if (!started) return;
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            popup.classList.add(colors[Math.floor(Math.random() * colors.length)]);
+            popup.innerText = messages[Math.floor(Math.random() * messages.length)];
+            const x = Math.random() * (window.innerWidth - 240);
+            const y = Math.random() * (window.innerHeight - 120);
+            popup.style.left = `${x}px`;
+            popup.style.top = `${y}px`;
+            document.body.appendChild(popup);
+          }, i * intervalMs);
+        }
+
+        // 飘心
+        setInterval(() => {
+          if (!started || document.querySelectorAll('.heart').length > 12) return;
+          const heart = document.createElement('div');
+          heart.className = 'heart';
+          heart.textContent = '❤️';
+          heart.style.left = Math.random() * window.innerWidth + 'px';
+          heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          document.body.appendChild(heart);
+          setTimeout(() => heart.remove(), 5000);
+        }, 700);
+      }, 1000);
+    }, photoDisplayDuration + totalPhotos * photoIntervalMs);
   });
 </script>
 
