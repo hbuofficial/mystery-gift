@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎁 神秘礼物</title>
+  <title>✨ 给姚学姐的2026跨年礼物</title>
   <style>
     * {
       margin: 0;
@@ -11,13 +11,158 @@
       box-sizing: border-box;
     }
     body {
-      background: linear-gradient(135deg, #f5f7fa 0%, #e4edf9 100%);
+      background: #000;
       min-height: 100vh;
       font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
       overflow: hidden;
       position: relative;
-      perspective: 1000px;
-      transform-style: preserve-3d;
+      color: white;
+    }
+
+    .start-btn {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 16px 40px;
+      background: linear-gradient(135deg, #ff6b9d, #ff8e53);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(255, 107, 157, 0.5);
+      z-index: 100;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .start-btn:hover {
+      transform: translate(-50%, -50%) scale(1.05);
+      box-shadow: 0 12px 30px rgba(255, 107, 157, 0.7);
+    }
+
+    #stars {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 80;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
+    .star {
+      position: absolute;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--duration, 3s) infinite ease-in-out;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: var(--max-opacity, 1); }
+    }
+
+    #countdownOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 90;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    #countdownOverlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .year2026 {
+      font-size: 140px;
+      font-weight: 900;
+      background: linear-gradient(45deg, #ff7eb3, #ff758c, #ff9a9e, #ffd166);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 30px rgba(255, 122, 180, 0.6);
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+    }
+
+    .year2026.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .countdown-number {
+      font-size: 180px;
+      font-weight: 900;
+      color: white;
+      text-shadow:
+        0 0 10px #ffffff,
+        0 0 20px #ffffff,
+        0 0 30px #ffffff,
+        0 0 40px #a0d8ff,
+        0 0 70px #8abeff,
+        0 0 100px #70a0ff;
+      z-index: 91;
+    }
+
+    #typewriterText {
+      position: fixed;
+      top: 40%;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      max-width: 85%;
+      z-index: 96;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.8s ease;
+    }
+
+    #typewriterText.show {
+      opacity: 1;
+    }
+
+    #typewriterText p {
+      color: #f0f0ff;
+      font-size: 20px;
+      line-height: 1.7;
+      margin: 12px 0;
+      text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+      font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+      letter-spacing: 1px;
+      white-space: pre-wrap;
+    }
+
+    .slide-in-text {
+      opacity: 0;
+      transform: translateX(-100%);
+      animation: slideInRight 1.2s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
+    }
+
+    .slide-in-text.delay {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes slideInRight {
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
 
     .popup {
@@ -38,7 +183,6 @@
       animation: pop3D 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
     }
 
-    /* 照片专用样式 */
     .popup.photo-popup {
       width: 180px;
       height: 180px;
@@ -56,7 +200,6 @@
       object-fit: cover;
     }
 
-    /* 淡出动画 */
     @keyframes fadeOut {
       from { opacity: 1; transform: translateZ(0) scale(1); }
       to { opacity: 0; transform: translateZ(-50px) scale(0.9); }
@@ -110,23 +253,66 @@
       }
     }
 
-    .start-btn {
+    /* ✨ 结尾页：图左文右，快速淡入 */
+    #finalPage {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      padding: 14px 32px;
-      background: #0078d4;
-      color: white;
-      border: none;
-      border-radius: 30px;
-      font-size: 18px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
-      z-index: 20;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.6s ease; /* 更快出现 */
     }
-    .start-btn:hover {
-      background: #0066b3;
+
+    .final-content {
+      display: flex;
+      align-items: center;
+      gap: 50px;
+      max-width: 900px;
+      padding: 20px;
+    }
+
+    .final-photo img {
+      width: 320px;          /* 图片更大 */
+      height: 320px;
+      object-fit: cover;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(255, 107, 157, 0.4);
+    }
+
+    .final-text {
+      text-align: left;
+      color: white;
+      font-size: 24px;
+      line-height: 1.8;
+      font-weight: 500;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+      min-width: 280px;
+    }
+
+    .final-text div {
+      margin-bottom: 16px;
+      opacity: 0;
+    }
+
+    @media (max-width: 768px) {
+      .final-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 30px;
+      }
+      .final-photo img {
+        width: 280px;
+        height: 280px;
+      }
+      .final-text {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
@@ -134,10 +320,69 @@
 
 <button id="startBtn" class="start-btn">姚学姐！2026即将到来，请接收这份surprise！</button>
 
-<!-- 背景音乐（循环播放） -->
-<audio id="bgMusic" src="background-music.mp3" preload="auto" loop></audio>
+<div id="stars"></div>
+
+<div id="countdownOverlay">
+  <div class="year2026" id="year2026">2026</div>
+  <div class="countdown-number" id="countNum">5</div>
+</div>
+
+<div id="typewriterText">
+  <p id="line1"></p>
+  <p id="line2"></p>
+</div>
+
+<!-- 结尾页 -->
+<div id="finalPage">
+  <div class="final-content">
+    <div class="final-photo">
+      <img src="images/end.jpg" alt="End Photo">
+    </div>
+    <div class="final-text">
+      <div id="finalLine1"></div>
+      <div id="finalLine2"></div>
+      <div id="finalLine3"></div>
+    </div>
+  </div>
+</div>
+
+<audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
 
 <script>
+  // ========== 星空 ==========
+  function createStars() {
+    const c = document.getElementById('stars');
+    for (let i = 0; i < 300; i++) {
+      const s = document.createElement('span');
+      s.classList.add('star');
+      s.style.left = `${Math.random() * 100}%`;
+      s.style.top = `${Math.random() * 100}%`;
+      s.style.width = s.style.height = `${0.5 + Math.random() * 2}px`;
+      s.style.setProperty('--max-opacity', 0.4 + Math.random() * 0.6);
+      s.style.setProperty('--duration', `${2 + Math.random() * 4}s`);
+      if (Math.random() > 0.85) s.style.background = ['#a0d8ff','#ffffff','#fffacd'][Math.floor(Math.random()*3)];
+      c.appendChild(s);
+    }
+  }
+  createStars();
+
+  // ========== 打字机函数 ==========
+  function typeWriter(element, text, delay = 80, callback = null) {
+    let i = 0;
+    element.textContent = '';
+    element.style.opacity = '1';
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        element.textContent += text.charAt(i);
+        i++;
+      } else {
+        clearInterval(timer);
+        if (callback) callback();
+      }
+    }, delay);
+  }
+
+  // ========== 主流程 ==========
   const messages = [
     "愿所有的烦恼都消失",
     "珍惜每一刻",
@@ -152,9 +397,8 @@
     "世界上美好的东西不太多，立秋傍晚从河对岸吹出来的风"
   ];
 
-  // ✅ 优化后的17个心形点（扩大范围）
   const heartPoints = [
-    { x: 0, y: -180 },     // 顶部尖点
+    { x: 0, y: -180 },
     { x: 20, y: -130 },
     { x: 40, y: -90 },
     { x: 60, y: -50 },
@@ -172,106 +416,176 @@
     { x: -20, y: -130 }
   ];
 
-  const photoPaths = Array.from({ length: 17 }, (_, i) => `images/${i + 1}.jpg`);
-
+  const photoPaths = Array.from({ length: 16 }, (_, i) => `images/${i + 1}.jpg`);
   let started = false;
+
+  function startMainExperience() {
+    const container = document.getElementById('typewriterText');
+    const line1 = document.getElementById('line1');
+    const line2 = document.getElementById('line2');
+
+    const text1 = "每个人的世界都会下雨，我没办法在你心里撑伞，但我愿意陪着你";
+    const text2 = "你特别好，特别温柔，特别值得被爱！相信我，那个真正爱你的人很快就会出现";
+
+    line1.textContent = text1;
+    line2.textContent = text2;
+
+    line1.classList.add('slide-in-text');
+    line2.classList.add('slide-in-text', 'delay');
+
+    container.classList.add('show');
+
+    const totalPhotos = photoPaths.length;
+    const photoIntervalMs = 150;
+    const photoDisplayDuration = 2500;
+    const photoElements = [];
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+    const scale = 4.0;
+
+    for (let i = 0; i < totalPhotos; i++) {
+      setTimeout(() => {
+        if (!started) return;
+        const popup = document.createElement('div');
+        popup.className = 'popup photo-popup';
+        const img = document.createElement('img');
+        img.src = photoPaths[i];
+        popup.appendChild(img);
+
+        const pt = heartPoints[i];
+        const left = centerX + pt.x * scale - 100;
+        const top = centerY + pt.y * scale - 100;
+        popup.style.left = `${Math.max(10, Math.min(window.innerWidth - 210, left))}px`;
+        popup.style.top = `${Math.max(10, Math.min(window.innerHeight - 210, top))}px`;
+        document.body.appendChild(popup);
+        photoElements.push(popup);
+      }, i * photoIntervalMs);
+    }
+
+    setTimeout(() => {
+      photoElements.forEach(p => p.classList.add('fade-out'));
+      container.style.opacity = '0';
+
+      setTimeout(() => {
+        photoElements.forEach(p => p.remove());
+        container.style.display = 'none';
+
+        const totalPopups = 150;
+        const intervalMs = 80;
+        const colors = ['color1','color2','color3','color4','color5'];
+        const popupElements = [];
+
+        for (let i = 0; i < totalPopups; i++) {
+          setTimeout(() => {
+            if (!started) return;
+            const p = document.createElement('div');
+            p.className = 'popup ' + colors[Math.floor(Math.random()*colors.length)];
+            p.innerText = messages[Math.floor(Math.random()*messages.length)];
+            p.style.left = `${Math.random()*(window.innerWidth-240)}px`;
+            p.style.top = `${Math.random()*(window.innerHeight-120)}px`;
+            document.body.appendChild(p);
+            popupElements.push(p);
+          }, i * intervalMs);
+        }
+
+        const heartInterval = setInterval(() => {
+          if (!started || document.querySelectorAll('.heart').length > 12) return;
+          const h = document.createElement('div');
+          h.className = 'heart';
+          h.textContent = '❤️';
+          h.style.left = Math.random() * window.innerWidth + 'px';
+          h.style.animationDuration = (Math.random() * 2 + 2) + 's';
+          document.body.appendChild(h);
+          setTimeout(() => h.remove(), 5000);
+        }, 700);
+
+        // === 弹窗全部出现后处理结尾页 ===
+        setTimeout(() => {
+          popupElements.forEach(p => p.classList.add('fade-out'));
+          clearInterval(heartInterval);
+          const hearts = document.querySelectorAll('.heart');
+          hearts.forEach(h => h.style.animation = 'fadeOut 1s forwards');
+
+          setTimeout(() => {
+            popupElements.forEach(p => p.remove());
+            hearts.forEach(h => h.remove());
+
+            // 停止背景音乐（可选）
+            const audio = document.getElementById('bgMusic');
+            if (audio) audio.pause();
+
+            // ⏱️ 仅等待 2 秒（原 4 秒缩短一半）再显示 finalPage
+            setTimeout(() => {
+              const finalPage = document.getElementById('finalPage');
+              finalPage.style.opacity = '1';
+              finalPage.style.pointerEvents = 'all';
+
+              // 打字机效果
+              const l1 = document.getElementById('finalLine1');
+              const l2 = document.getElementById('finalLine2');
+              const l3 = document.getElementById('finalLine3');
+
+              typeWriter(l1, "最后！", 100, () => {
+                setTimeout(() => {
+                  typeWriter(l2, "要快乐哦！学姐", 80, () => {
+                    setTimeout(() => {
+                      typeWriter(l3, "你笑起来真的很美！！！", 60);
+                    }, 300);
+                  });
+                }, 400);
+              });
+            }, 2000); // ← 关键：2秒
+          }, 1100);
+        }, totalPopups * intervalMs + 2000);
+      }, 1000);
+    }, photoDisplayDuration + totalPhotos * photoIntervalMs);
+  }
 
   document.getElementById('startBtn').addEventListener('click', () => {
     if (started) return;
     started = true;
     document.getElementById('startBtn').style.display = 'none';
 
+    document.getElementById('stars').style.opacity = '1';
+
+    const overlay = document.getElementById('countdownOverlay');
+    const countNum = document.getElementById('countNum');
+    const year2026 = document.getElementById('year2026');
+
     const audio = document.getElementById('bgMusic');
     if (audio) {
       audio.volume = 0.45;
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(e => console.log("音频播放被阻止:", e));
-      }
+      audio.play().catch(e => console.log("音频播放被阻止:", e));
     }
 
-    const totalPhotos = photoPaths.length;
-    const photoIntervalMs = 150;
-    const photoDisplayDuration = 2500;
+    overlay.classList.add('active');
 
-    const photoElements = [];
-
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-
-    // ✅ 关键：增大 scale 到 3~5
-    const scale = 4.0; // 调整此值控制爱心大小
-
-    for (let i = 0; i < totalPhotos; i++) {
-      setTimeout(() => {
-        if (!started) return;
-
-        const popup = document.createElement('div');
-        popup.className = 'popup photo-popup';
-        const img = document.createElement('img');
-        img.src = photoPaths[i];
-        img.alt = `照片 ${i + 1}`;
-        popup.appendChild(img);
-
-        // 获取心形点并放大
-        const point = heartPoints[i];
-        const left = centerX + point.x * scale - 100;
-        const top = centerY + point.y * scale - 100;
-
-        // 安全边界
-        const safeLeft = Math.max(10, Math.min(window.innerWidth - 210, left));
-        const safeTop = Math.max(10, Math.min(window.innerHeight - 210, top));
-
-        popup.style.left = `${safeLeft}px`;
-        popup.style.top = `${safeTop}px`;
-
-        document.body.appendChild(popup);
-        photoElements.push(popup);
-      }, i * photoIntervalMs);
-    }
-
-    // === 淡出并启动祝福语 ===
-    setTimeout(() => {
-      photoElements.forEach(p => p.classList.add('fade-out'));
-      setTimeout(() => {
-        photoElements.forEach(p => p.remove());
-
-        // 启动文字弹窗
-        const totalPopups = 150;
-        const intervalMs = 80;
-        const colors = ['color1', 'color2', 'color3', 'color4', 'color5'];
-        for (let i = 0; i < totalPopups; i++) {
+    let count = 5;
+    const countdownInterval = setInterval(() => {
+      count--;
+      if (count >= 0) {
+        countNum.textContent = count;
+        if (count === 0) {
+          clearInterval(countdownInterval);
           setTimeout(() => {
-            if (!started) return;
-            const popup = document.createElement('div');
-            popup.className = 'popup';
-            popup.classList.add(colors[Math.floor(Math.random() * colors.length)]);
-            popup.innerText = messages[Math.floor(Math.random() * messages.length)];
-            const x = Math.random() * (window.innerWidth - 240);
-            const y = Math.random() * (window.innerHeight - 120);
-            popup.style.left = `${x}px`;
-            popup.style.top = `${y}px`;
-            document.body.appendChild(popup);
-          }, i * intervalMs);
+            countNum.style.opacity = '0';
+            countNum.style.transform = 'scale(0.8)';
+            year2026.classList.add('show');
+            setTimeout(() => {
+              document.getElementById('stars').style.opacity = '0';
+              overlay.style.opacity = '0';
+              setTimeout(() => {
+                document.getElementById('stars').style.display = 'none';
+                overlay.style.display = 'none';
+                startMainExperience();
+              }, 500);
+            }, 1000);
+          }, 500);
         }
-
-        // 飘心
-        setInterval(() => {
-          if (!started || document.querySelectorAll('.heart').length > 12) return;
-          const heart = document.createElement('div');
-          heart.className = 'heart';
-          heart.textContent = '❤️';
-          heart.style.left = Math.random() * window.innerWidth + 'px';
-          heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
-          document.body.appendChild(heart);
-          setTimeout(() => heart.remove(), 5000);
-        }, 700);
-      }, 1000);
-    }, photoDisplayDuration + totalPhotos * photoIntervalMs);
+      }
+    }, 1000);
   });
 </script>
 
 </body>
 </html>
-
-
