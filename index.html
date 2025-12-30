@@ -122,7 +122,7 @@
 
     #typewriterText {
       position: fixed;
-      top: 40%;
+      top: 35%;
       left: 50%;
       transform: translateX(-50%);
       text-align: center;
@@ -156,6 +156,14 @@
 
     .slide-in-text.delay {
       animation-delay: 0.4s;
+    }
+
+    .slide-in-text.delay2 {
+      animation-delay: 0.8s;
+    }
+
+    .slide-in-text.delay3 {
+      animation-delay: 1.2s;
     }
 
     @keyframes slideInRight {
@@ -330,6 +338,8 @@
 <div id="typewriterText">
   <p id="line1"></p>
   <p id="line2"></p>
+  <p id="line3"></p>
+  <p id="line4"></p>
 </div>
 
 <!-- 结尾页 -->
@@ -423,17 +433,35 @@
     const container = document.getElementById('typewriterText');
     const line1 = document.getElementById('line1');
     const line2 = document.getElementById('line2');
+    const line3 = document.getElementById('line3');
+    const line4 = document.getElementById('line4');
 
-    const text1 = "每个人的世界都会下雨，我没办法在你心里撑伞，但我愿意陪着你";
-    const text2 = "你特别好，特别温柔，特别值得被爱！相信我，那个真正爱你的人很快就会出现";
-
-    line1.textContent = text1;
-    line2.textContent = text2;
+    const text1 = "每个人的世界都会下雨，我没办法在你心里撑伞";
+    const text2 = "但我愿意陪着你";
+    const text3 = "你特别好，特别温柔，特别值得被爱！";
+    const text4 = "相信我，那个真正爱你的人很快就会出现";
 
     line1.classList.add('slide-in-text');
     line2.classList.add('slide-in-text', 'delay');
+    line3.classList.add('slide-in-text', 'delay2');
+    line4.classList.add('slide-in-text', 'delay3');
 
     container.classList.add('show');
+
+    // 打字机依次执行
+    typeWriter(line1, text1, 80, () => {
+      setTimeout(() => {
+        typeWriter(line2, text2, 80, () => {
+          setTimeout(() => {
+            typeWriter(line3, text3, 80, () => {
+              setTimeout(() => {
+                typeWriter(line4, text4, 80);
+              }, 300);
+            });
+          }, 500);
+        });
+      }, 500);
+    });
 
     const totalPhotos = photoPaths.length;
     const photoIntervalMs = 150;
@@ -510,7 +538,7 @@
             popupElements.forEach(p => p.remove());
             hearts.forEach(h => h.remove());
 
-            // ⏱️ 等待 2 秒再显示 finalPage（不再暂停音乐）
+            // ⏱️ 等待 2 秒再显示 finalPage
             setTimeout(() => {
               const finalPage = document.getElementById('finalPage');
               finalPage.style.opacity = '1';
@@ -525,7 +553,6 @@
                   typeWriter(l2, "要快乐哦！学姐", 80, () => {
                     setTimeout(() => {
                       typeWriter(l3, "你笑起来真的很美！！！", 60);
-                      // ✅ 音乐继续播放，直到用户关闭页面（无需 pause）
                     }, 300);
                   });
                 }, 400);
