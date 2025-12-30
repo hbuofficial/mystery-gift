@@ -266,7 +266,7 @@
       z-index: 200;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.6s ease; /* 更快出现 */
+      transition: opacity 0.6s ease;
     }
 
     .final-content {
@@ -278,7 +278,7 @@
     }
 
     .final-photo img {
-      width: 320px;          /* 图片更大 */
+      width: 320px;
       height: 320px;
       object-fit: cover;
       border-radius: 20px;
@@ -346,7 +346,7 @@
   </div>
 </div>
 
-<audio id="bgMusic" src="background-music.mp3" preload="auto" loop type="audio/mpeg"></audio>
+<audio id="bgMusic" src="music.mp3" preload="auto" loop></audio>
 
 <script>
   // ========== 星空 ==========
@@ -510,17 +510,12 @@
             popupElements.forEach(p => p.remove());
             hearts.forEach(h => h.remove());
 
-            // 停止背景音乐（可选）
-            const audio = document.getElementById('bgMusic');
-            if (audio) audio.pause();
-
-            // ⏱️ 仅等待 2 秒（原 4 秒缩短一半）再显示 finalPage
+            // ⏱️ 等待 2 秒再显示 finalPage（不再暂停音乐）
             setTimeout(() => {
               const finalPage = document.getElementById('finalPage');
               finalPage.style.opacity = '1';
               finalPage.style.pointerEvents = 'all';
 
-              // 打字机效果
               const l1 = document.getElementById('finalLine1');
               const l2 = document.getElementById('finalLine2');
               const l3 = document.getElementById('finalLine3');
@@ -530,11 +525,12 @@
                   typeWriter(l2, "要快乐哦！学姐", 80, () => {
                     setTimeout(() => {
                       typeWriter(l3, "你笑起来真的很美！！！", 60);
+                      // ✅ 音乐继续播放，直到用户关闭页面（无需 pause）
                     }, 300);
                   });
                 }, 400);
               });
-            }, 2000); // ← 关键：2秒
+            }, 2000);
           }, 1100);
         }, totalPopups * intervalMs + 2000);
       }, 1000);
@@ -589,7 +585,3 @@
 
 </body>
 </html>
-
-
-
-
